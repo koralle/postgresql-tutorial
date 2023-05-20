@@ -1,0 +1,36 @@
+services:
+  postgres:
+    container_name: postgres-tutorial
+    build:
+      context: .
+      dockerfile: ./dockerfiles/postgresql/Dockerfile
+      args:
+        - DB_LANG=ja_JP
+
+    ports:
+      - 5432:5432
+
+    environment:
+      - POSTGRES_USER=dvdrental
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=dvdrental
+      - TZ=Asia/Tokyo
+
+    restart: always
+
+    volumes:
+      - ./dockerfiles/postgresql/data:/var/lib/postgresql/data
+      - ./dockerfiles/postgresql/init:/docker-entrypoint-initdb.d
+
+  pgadmin:
+    image: dpage/pgadmin4:7.1
+    container_name: pgadmin-tutorial
+    ports:
+      - 8080:80
+    volumes:
+      - ./dockerfiles/pgadmin/data:/var/lib/pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: tutorial@tutorial.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    depends_on:
+      - postgres
